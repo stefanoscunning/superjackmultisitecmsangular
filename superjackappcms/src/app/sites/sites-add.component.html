@@ -1,0 +1,42 @@
+<div class="sj-bottom-sheet">
+
+    <div class="expandedDetailContainer">
+        <div class="expandedDetailTitle mb-3">
+            <i class="fas fa-plus mr-3"></i>
+            <span>Site Add Panel</span>
+        </div>
+        <form novalidate="" (ngSubmit)="closeBottomSheet()">
+            <div *ngIf="site!=null" fxLayout="row wrap" fxLayoutAlign="space-between stretch" fxLayout.xs="column" fxLayoutGap="10px">
+    
+                <mat-form-field>
+                    <mat-label>Protocol</mat-label>
+                    <mat-select [(ngModel)]="site.protocol" [ngModelOptions]="{standalone: true}"
+                        (selectionChange)="onProtocolChange($event)">
+                        <mat-option *ngFor="let p of protocols" [value]="p">
+                            {{p}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Domain Name</mat-label>
+                    <input (keypress)="onDomainNameChange($event)" type="text" matInput 
+                    [(ngModel)]="site.domainName"  [ngModelOptions]="{standalone: true}">
+                    <mat-hint class="sj-formhint-error" *ngIf="!isFieldValid('domainName') || !isValidDomainUrl('domainName')">Please enter a domain name</mat-hint>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Language</mat-label>
+                    <mat-select [(ngModel)]="site.culture" [ngModelOptions]="{standalone: true}"
+                        (selectionChange)="onLanguageChange($event)">
+                        <mat-option *ngFor="let l of languages" [value]="l.code">
+                            {{l.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="sj-button-row">
+                <button class="mr-3" [disabled]="!isFormValid()" type="submit" mat-raised-button color="primary"><i class="fas fa-save mr-3"></i><span>Save</span></button>
+                <button mat-raised-button>Cancel</button>
+              </div>
+        </form>
+    </div>
+</div>
