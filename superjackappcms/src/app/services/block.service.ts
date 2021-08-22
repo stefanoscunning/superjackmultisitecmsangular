@@ -3,11 +3,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, ActivatedRoute } from "@angular/router";
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-import {Site} from '../models';
+import {Block} from '../models';
 import { SuperjackService } from './superjack.service';
 
 @Injectable({providedIn: 'root'})
-export class SiteService {
+export class BlockService {
     
     httpHeaders: HttpHeaders | undefined;
     token: string | undefined;
@@ -32,41 +32,41 @@ export class SiteService {
 
     
 
-    getAll(): Observable<Site[]> {
-        return this.http.get<Site[]>(`${environment.api.url}/sites/all`, {
+    getAll(): Observable<Block[]> {
+        return this.http.get<Block[]>(`${environment.api.url}/blocks/all`, {
             headers:  this.httpHeaders
         });
         
     }
 
-    getById(id: number): Observable<Site> {
-        return this.http.get<Site>(`${environment.api.url}/sites/` + id, {
+    getById(id: number): Observable<Block> {
+        return this.http.get<Block>(`${environment.api.url}/blocks/` + id, {
             headers:  this.httpHeaders
         });
         
     }
 
 
-    create(item: Site): Observable<Site>{
-        return this.http.post<Site>(`${environment.api.url}/sites`, item, {
+    create(item: Block): Observable<Block>{
+        return this.http.post<Block>(`${environment.api.url}/blocks`, item, {
             headers: this.httpHeaders
         });
     }
 
-    update(item: Site){
-        return this.http.put(`${environment.api.url}/sites/` + item.id, item,{
+    update(item: Block){
+        return this.http.put(`${environment.api.url}/blocks/` + item.id, item,{
             headers: this.httpHeaders
         });
     }
 
     delete(id: number) {
-        return this.http.delete(`${environment.api.url}/sites/` + id,{
+        return this.http.delete(`${environment.api.url}/blocks/` + id,{
             headers:  this.httpHeaders
         });
     }
 
     deleteByUuid(uuid: string) {
-        return this.http.delete(`${environment.api.url}/sites/uuid/` + uuid,{
+        return this.http.delete(`${environment.api.url}/blocks/uuid/` + uuid,{
             headers:  this.httpHeaders
         });
     }

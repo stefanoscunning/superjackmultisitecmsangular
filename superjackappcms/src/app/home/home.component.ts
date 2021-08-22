@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     initUsers(){
 
       this.userService.getAll().subscribe(data=>{
-        console.log(data);
+       
       });
     }
 

@@ -17,7 +17,7 @@ import {UserService} from './services/user.service';
 import {DialogsModule} from './dialogs/dialogs.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 // import { SignaturePadModule } from 'angular2-signaturepad';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
 @NgModule({
@@ -36,7 +36,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     AppRoutingModule,
     SharedModule,
     MaterialModule,
-   DialogsModule
+   DialogsModule,
+   FontAwesomeModule
     // SignaturePadModule
   ],
   providers: [AuthService, UserService],

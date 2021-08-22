@@ -3,11 +3,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, ActivatedRoute } from "@angular/router";
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-import {Site} from '../models';
+import {BlockField} from '../models';
 import { SuperjackService } from './superjack.service';
 
 @Injectable({providedIn: 'root'})
-export class SiteService {
+export class BlockFieldService {
     
     httpHeaders: HttpHeaders | undefined;
     token: string | undefined;
@@ -32,41 +32,54 @@ export class SiteService {
 
     
 
-    getAll(): Observable<Site[]> {
-        return this.http.get<Site[]>(`${environment.api.url}/sites/all`, {
+    getAllByBlockId(blockId: number): Observable<BlockField[]> {
+        return this.http.get<BlockField[]>(`${environment.api.url}/blockfields/blockid/` + blockId, {
             headers:  this.httpHeaders
         });
         
     }
 
-    getById(id: number): Observable<Site> {
-        return this.http.get<Site>(`${environment.api.url}/sites/` + id, {
+    getAll(): Observable<BlockField[]> {
+        return this.http.get<BlockField[]>(`${environment.api.url}/blockfields/all`, {
+            headers:  this.httpHeaders
+        });
+        
+    }
+
+    getById(id: number): Observable<BlockField> {
+        return this.http.get<BlockField>(`${environment.api.url}/blockfields/` + id, {
             headers:  this.httpHeaders
         });
         
     }
 
 
-    create(item: Site): Observable<Site>{
-        return this.http.post<Site>(`${environment.api.url}/sites`, item, {
+    create(item: BlockField): Observable<BlockField>{
+        return this.http.post<BlockField>(`${environment.api.url}/blockfields`, item, {
             headers: this.httpHeaders
         });
     }
 
-    update(item: Site){
-        return this.http.put(`${environment.api.url}/sites/` + item.id, item,{
+    update(item: BlockField){
+        return this.http.put(`${environment.api.url}/blockfields/` + item.id, item,{
+            headers: this.httpHeaders
+        });
+    }
+
+    updateAll(blockId: number, items: BlockField[]){
+        return this.http.put(`${environment.api.url}/blockfields/blockid/` + blockId, items,{
             headers: this.httpHeaders
         });
     }
 
     delete(id: number) {
-        return this.http.delete(`${environment.api.url}/sites/` + id,{
+        return this.http.delete(`${environment.api.url}/blockfields/` + id,{
             headers:  this.httpHeaders
         });
     }
 
     deleteByUuid(uuid: string) {
-        return this.http.delete(`${environment.api.url}/sites/uuid/` + uuid,{
+        return this.http.delete(`${environment.api.url}/blockfields/uuid/` + uuid,{
             headers:  this.httpHeaders
         });
     }

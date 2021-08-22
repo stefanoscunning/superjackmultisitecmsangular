@@ -1,0 +1,54 @@
+<div class="sj-bottom-sheet">
+
+    <div class="expandedDetailContainer">
+        <div class="expandedDetailTitle mb-3">
+            <span class="ms-3">Block Field Editor</span>
+        </div>
+        <form novalidate="" (ngSubmit)="closeBlockFieldBottomSheet()" #frmBlockFields="ngForm">
+            <div *ngIf="blockfield!=null" fxLayout="row wrap" fxLayoutAlign="space-between stretch" fxLayout.xs="column" fxLayoutGap="10px">
+    
+                <mat-form-field>
+                    <mat-label>Title</mat-label>
+                    <input #blockfieldTitle (keypress)="onTitleChange($event)" type="text" matInput 
+                    [(ngModel)]="blockfield.title"  [ngModelOptions]="{standalone: true}">
+                    <mat-hint class="sj-formhint-error" *ngIf="!isFieldValid('title')">Please enter a title</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Data Type</mat-label>
+                    <mat-select #blockfieldDataType [(ngModel)]="blockfield.dataType" [ngModelOptions]="{standalone: true}">
+                        <mat-option *ngFor="let d of dataTypes" [value]="d">
+                            {{d}}
+                        </mat-option>
+                    </mat-select>
+                    <!-- <input #blockfieldDataType (keypress)="onTypeChange($event)" type="text" matInput 
+                    [(ngModel)]="blockfield.dataType"  [ngModelOptions]="{standalone: true}"> -->
+                    <!-- <mat-hint class="sj-formhint-error" *ngIf="!isFieldValid('dataType')">Please enter a data type</mat-hint> -->
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Value</mat-label>
+                    <textarea #blockfieldValue (keypress)="onValueChange($event)" matInput cdkTextareaAutosize  [(ngModel)]="blockfield.value" [ngModelOptions]="{standalone: true}">
+
+                    </textarea>    
+                    <mat-hint class="sj-formhint-error" *ngIf="!isFieldValid('value')">Please enter a value</mat-hint>
+                </mat-form-field>
+              
+            </div>
+            <div class="sj-button-row">
+                <button class="me-3 mb-3" [disabled]="!isFormValid()" type="submit" mat-raised-button color="primary">
+                    <fa-icon [icon]="['fas', 'save']"></fa-icon>
+                    <span class="ms-3">Save</span></button>
+                    <button *ngIf="blockfield!=undefined" [disabled]="blockfield.id==0" type="button" class="me-3 mb-3" (click)="removeBlockField()"
+                    mat-raised-button color="warn" aria-label="Remove">
+                    <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+                    <span class="ms-3">Delete</span>
+                </button>
+                <button type="button" class="me-3 mb-3" mat-raised-button (click)="cancelBlockField()">
+                    <fa-icon [icon]="['fas', 'ban']"></fa-icon>
+                    <span class="ms-3">Cancel</span>
+                </button>
+              </div>
+        </form>
+    </div>
+</div>

@@ -3,11 +3,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, ActivatedRoute } from "@angular/router";
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-import {Site} from '../models';
+import {Page, PageSearchFilter} from '../models';
 import { SuperjackService } from './superjack.service';
 
 @Injectable({providedIn: 'root'})
-export class SiteService {
+export class PageService {
     
     httpHeaders: HttpHeaders | undefined;
     token: string | undefined;
@@ -32,42 +32,59 @@ export class SiteService {
 
     
 
-    getAll(): Observable<Site[]> {
-        return this.http.get<Site[]>(`${environment.api.url}/sites/all`, {
+    getAll(): Observable<Page[]> {
+        return this.http.get<Page[]>(`${environment.api.url}/pages/all`, {
             headers:  this.httpHeaders
         });
         
     }
 
-    getById(id: number): Observable<Site> {
-        return this.http.get<Site>(`${environment.api.url}/sites/` + id, {
+    getAllBySiteId(siteId: number): Observable<Page[]> {
+        return this.http.get<Page[]>(`${environment.api.url}/pages/siteid/` + siteId, {
             headers:  this.httpHeaders
         });
         
     }
 
 
-    create(item: Site): Observable<Site>{
-        return this.http.post<Site>(`${environment.api.url}/sites`, item, {
+    getAllByQuery(siteId: number): Observable<Page[]> {
+        return this.http.get<Page[]>(`${environment.api.url}/pages/query`, {
+            headers:  this.httpHeaders
+        });
+        
+    }
+
+    getByQuery(item: PageSearchFilter): Observable<Page[]>{
+        return this.http.post<Page[]>(`${environment.api.url}/pages/querysearch`, item, {
             headers: this.httpHeaders
         });
     }
 
-    update(item: Site){
-        return this.http.put(`${environment.api.url}/sites/` + item.id, item,{
+    getById(id: number): Observable<Page> {
+        return this.http.get<Page>(`${environment.api.url}/pages/` + id, {
+            headers:  this.httpHeaders
+        });
+        
+    }
+
+
+    create(item: Page): Observable<Page>{
+        return this.http.post<Page>(`${environment.api.url}/pages`, item, {
+            headers: this.httpHeaders
+        });
+    }
+
+    update(item: Page){
+        return this.http.put(`${environment.api.url}/pages/` + item.id, item,{
             headers: this.httpHeaders
         });
     }
 
     delete(id: number) {
-        return this.http.delete(`${environment.api.url}/sites/` + id,{
+        return this.http.delete(`${environment.api.url}/pages/` + id,{
             headers:  this.httpHeaders
         });
     }
 
-    deleteByUuid(uuid: string) {
-        return this.http.delete(`${environment.api.url}/sites/uuid/` + uuid,{
-            headers:  this.httpHeaders
-        });
-    }
+    
 }

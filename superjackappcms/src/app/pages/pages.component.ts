@@ -5,20 +5,19 @@ import {FormGroup, FormControl} from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatBottomSheet, MatBottomSheetRef} from '@angular/material/bottom-sheet';
-import {Language, Site, Transfer} from '../models';
+import {Language, Page, PageSearchFilter, Transfer} from '../models';
 import { environment } from '../../environments/environment';
-import {SiteService} from '../services';
+import {PageService} from '../services';
 import * as Lookups from '../shared/lookups';
-import { SitesAddComponent } from './sites-add.component';
 import {ConfirmationDialogService} from '../dialogs/confirmationdialog.service';
 import { faGlobe as fasGlobe, faEllipsisV as fasEllipsisV, faPencilAlt as fasPencilAlt, 
 faSave as fasSave, faTrash as fasTrash, faClone as fasClone} from '@fortawesome/free-solid-svg-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-sites',
-  templateUrl: './sites.component.html',
-  styleUrls: ['./sites.component.scss'],
+  selector: 'app-pages',
+  templateUrl: './pages.component.html',
+  styleUrls: ['./pages.component.scss'],
   animations: [
     trigger('detailExpand', [
       state('collapsed', style({height: '0px', minHeight: '0'})),
@@ -27,28 +26,28 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
     ]),
   ]
 })
-export class SitesComponent implements OnInit, OnDestroy {
+export class PagesComponent implements OnInit, OnDestroy {
     installingApp: boolean = true;
     userId: number | undefined;
     encryptionKey = environment.encryption.key;
     transfer: Transfer | undefined;
     languages: Language[] = Lookups.Languages;
-    sites: Site[] = [];
-    displayedColumns: string[] = ['select', 'protocol', 'domainName', 'culture'];
-    columnsToDisplay = ['protocol', 'domainName', 'culture'];
-    columnDisplayNames = ['Protocol', 'Domain Name', 'Culture'];
-    dataSource = new MatTableDataSource<Site>(this.sites);
-    selection = new SelectionModel<Site>(false, []);
-    expandedElement!: Site | null;
+    pages: Page[] = [];
+    displayedColumns: string[] = ['select', 'navigationTitle', 'pageTypeId', 'route'];
+    columnsToDisplay = ['navigationTitle', 'pageTypeId', 'route'];
+    columnDisplayNames = ['Navigation Title', 'Template', 'R oute'];
+    dataSource = new MatTableDataSource<Page>(this.pages);
+    selection = new SelectionModel<Page>(false, []);
+    expandedElement!: Page | null;
     protocols = ['http', 'https'];
-    newElement!: Site | null;
-    removalConfirmation: string[] = ["Delete Site?", "Are you sure you want to permanently delete this site?", "Delete", "Cancel"];
-    primarySiteRemovalConfirmation: string[] = ["Delete Site?", "You cannot delete your primary site", "OK", "Cancel"];
-    
+    newElement!: Page | null;
+    removalConfirmation: string[] = ["Delete Page?", "Are you sure you want to permanently delete this page?", "Delete", "Cancel"];
+    primaryPageRemovalConfirmation: string[] = ["Delete Page?", "You cannot delete your primary page", "OK", "Cancel"];
+    siteId!: number;
     
 
   constructor(private router: Router, private route: ActivatedRoute, 
-   private siteService: SiteService,
+   private pageService: PageService,
    private bottomsheet: MatBottomSheet,
    private confirmationDialogService: ConfirmationDialogService,
    iconLibrary: FaIconLibrary 
@@ -67,70 +66,35 @@ export class SitesComponent implements OnInit, OnDestroy {
 
     removeElement(){
       
-      if(this.expandedElement!=undefined && this.expandedElement.domainName=='superjack.co.uk'){
-        this.confirmationDialogService.confirm(this.primarySiteRemovalConfirmation[0], this.primarySiteRemovalConfirmation[1], this.primarySiteRemovalConfirmation[2], this.primarySiteRemovalConfirmation[3])
-        .subscribe(data => {
-          
-        });
-      }
-      else{
+      
         this.confirmationDialogService.confirm(this.removalConfirmation[0], this.removalConfirmation[1], this.removalConfirmation[2], this.removalConfirmation[3])
         .subscribe(data => {
           if(data.data){
             this.deleteElement();
           }
         });
-      }
+    
       
     }
 
     goToPages(){
       if(this.expandedElement!=undefined){
-        this.router.navigate(['/pages/' + this.expandedElement.id]);
+        
       }
     }
 
     deleteElement(){
       if(this.expandedElement!=undefined){
-        this.siteService.deleteByUuid(this.expandedElement.uuid).subscribe(data=>{
-          this.initSites();
-        });
+       
       }
 
     }
 
     addElement(){
-     this.openBottomSheet();
+    
     }
 
-    openBottomSheet(): void {
-      // Take refernce of bottom sheet
-
-         const bottomSheetRef = this.bottomsheet.open(SitesAddComponent);
-         bottomSheetRef.instance.newItemEvent.subscribe(data=>{
-            this.newElement = data;
-         });
-         
-         // subscribe to observable that emit event when bottom sheet closes
-         bottomSheetRef.afterDismissed().subscribe((dataFromChild) => {
-        if(this.newElement!=undefined){
-          this.save();
-        }
-       
-      });
-      }
-
-    onProtocolChange(evt: any){
-    //  if(this.expandedElement!=undefined){
-    //    this.expandedElement.protocol = evt.value;
-    //  }
-    }
-
-    onLanguageChange(evt: any){
-      // if(this.expandedElement!=undefined){
-      //   this.expandedElement.culture = evt.value;
-      // }
-    }
+   
 
     /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -147,11 +111,11 @@ export class SitesComponent implements OnInit, OnDestroy {
   }
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: Site): string {
+  checkboxLabel(row?: Page): string {
     if (!row) {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
     }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${this.sites.indexOf(row) + 1}`;
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${this.pages.indexOf(row) + 1}`;
   }
 
   changeExpandedRow(){
@@ -161,14 +125,14 @@ export class SitesComponent implements OnInit, OnDestroy {
   save(){
 
     if(this.newElement!=undefined){
-      this.siteService.create(this.newElement).subscribe(data=>{
-        this.initSites();
+      this.pageService.create(this.newElement).subscribe(data=>{
+        this.initPages();
       });
     }
     else{
       if(this.expandedElement!=undefined){
-        this.siteService.update(this.expandedElement).subscribe(data=>{
-          this.initSites();
+        this.pageService.update(this.expandedElement).subscribe(data=>{
+          this.initPages();
         });
       }
       
@@ -180,17 +144,37 @@ export class SitesComponent implements OnInit, OnDestroy {
       this.router.navigate([path]);
     }
 
-    initSites(){
-      this.siteService.getAll().subscribe(data=>{
-        this.sites = data;
-      });
+    initPages(){
+      if(this.siteId!=undefined){
+        let filter = new PageSearchFilter();
+        filter.siteId = this.siteId;
+        filter.level = 0;
+        filter.published = true;
+        this.pageService.getByQuery(filter).subscribe(data=>{
+          this.pages = data;
+        });
+      }
       
+      
+    }
+
+
+    initSite(){
+      this.route.params.subscribe(param =>{
+      
+        let s = this.route.snapshot.paramMap.get('siteid');
+        if(s!=undefined){
+          this.siteId = parseInt(s);
+          this.initPages();
+        }
+      });
+     
     }
 
     
   init(){
     if (this.userId != undefined) {
-     this.initSites();
+     this.initSite();
     }
   }
 

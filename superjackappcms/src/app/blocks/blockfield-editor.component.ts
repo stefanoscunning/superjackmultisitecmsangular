@@ -2,19 +2,20 @@ import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, Output, Eve
 import { Router, ActivatedRoute } from "@angular/router";
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { Language, Site, Transfer } from '../models';
+import { Language, Block, Transfer, BlockField } from '../models';
 import { environment } from '../../environments/environment';
 import * as Lookups from '../shared/lookups';
-import { faSave as fasSave, faPlus as fasPlus} from '@fortawesome/free-solid-svg-icons';
+import { faSave as fasSave, faPlus as fasPlus, faBan as fasBan} from '@fortawesome/free-solid-svg-icons';
   import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { UUID } from 'angular2-uuid';
 
+
 @Component({
-  selector: 'app-sites-add',
-  templateUrl: './sites-add.component.html',
+  selector: 'app-blockfield-editor4',
+  templateUrl: './blockfield-editor.component.html',
 
 })
-export class SitesAddComponent implements OnInit, OnDestroy {
+export class BlockFieldEditorComponent implements OnInit, OnDestroy {
   installingApp: boolean = true;
   userId: number | undefined;
   encryptionKey = environment.encryption.key;
@@ -23,13 +24,16 @@ export class SitesAddComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['select', 'protocol', 'domainName', 'culture'];
   columnsToDisplay = ['protocol', 'domainName', 'culture'];
   protocols = ['http', 'https'];
-  site: Site | undefined;
-  @Output() newItemEvent = new EventEmitter<Site>();
+  @Input() blockfield: BlockField | undefined;
+  @Output() newItemEvent = new EventEmitter<BlockField>();
+  @Output() removeItemEvent = new EventEmitter<BlockField>();
+  @Output() cancelItemEvent = new EventEmitter<BlockField>();
   myForm!: FormGroup;
+  dataTypes: string[] = ['bigint', 'boolean', 'datetime', 'decimal', 'int', 'string'];
 
 
   constructor(private router: Router, private route: ActivatedRoute,
-    private bottomsheet: MatBottomSheetRef<SitesAddComponent>,
+    private bottomsheet: MatBottomSheetRef<BlockFieldEditorComponent>,
     private formBuilder: FormBuilder,
     iconLibrary: FaIconLibrary 
 
@@ -43,68 +47,60 @@ export class SitesAddComponent implements OnInit, OnDestroy {
 
       }
     }
-    iconLibrary.addIcons(fasSave, fasPlus);
+    iconLibrary.addIcons(fasSave, fasPlus, fasBan);
   }
 
   save():void {
 
   }
 
-  closeBottomSheet():void {
-    this.newItemEvent.emit(this.site);
+  removeBlockField(): void {
+    this.removeItemEvent.emit(this.blockfield);
     this.bottomsheet.dismiss();
   }
 
-  onProtocolChange(evt: any) {
-    if(this.site!=undefined){
-      this.site.protocol = evt.value;
-    }
-    
-
+  closeBlockFieldBottomSheet():void {
+    this.newItemEvent.emit(this.blockfield);
+    this.bottomsheet.dismiss();
   }
 
-  onLanguageChange(evt: any) {
-    if(this.site!=undefined){
-      this.site.culture = evt.value;
-    }
+  cancelBlockField(): void{
+    this.cancelItemEvent.emit(this.blockfield);
+    this.bottomsheet.dismiss();
   }
 
-  onDomainNameChange(evt: any) {
-    this.isFieldValid('domainName');
-    this.isValidDomainUrl('domainName');
+ 
+
+  onTitleChange(evt: any) {
+    this.isFieldValid('title');
     this.isFormValid();
   }
 
-  isValidDomainUrl(field: string){
-    let valid = false;
-    if (field != null) {
-      if (this.site != undefined) {
-        for (const [key, value] of Object.entries(this.site)) {
-          if (key == field) {
-            if (validURL(String(value))) {
-              valid = true;
-            }
-          }
-        }
-      }
-    }
-    return valid;
+  onTypeChange(evt: any) {
+    this.isFieldValid('dataType');
+    this.isFormValid();
   }
+
+  onValueChange(evt: any) {
+    this.isFieldValid('value');
+    this.isFormValid();
+  }
+
 
   isFormValid() {
     let valid = false;
     let counter = 0;
     let total = 0;
-    if (this.site != undefined) {
-      counter = Object.keys(this.site).length;
-      for (const [key, value] of Object.entries(this.site)) {
+    if (this.blockfield != undefined) {
+      counter = Object.keys(this.blockfield).length;
+      for (const [key, value] of Object.entries(this.blockfield)) {
         if (String(value).length > 0) {
           total++;
         }
 
       }
     }
-    if(counter==total && this.isValidDomainUrl('domainName')){
+    if(counter==total){
       valid = true;
     }
 
@@ -114,8 +110,8 @@ export class SitesAddComponent implements OnInit, OnDestroy {
   isFieldValid(field: string) {
     let valid = false;
     if (field != null) {
-      if (this.site != undefined) {
-        for (const [key, value] of Object.entries(this.site)) {
+      if (this.blockfield != undefined) {
+        for (const [key, value] of Object.entries(this.blockfield)) {
           if (key == field) {
             if (String(value).length > 0) {
               valid = true;
@@ -132,16 +128,7 @@ export class SitesAddComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.site = new Site();
-    this.site.id = 0;
-    this.site.uuid = UUID.UUID();
-    this.site.culture = "en-GB";
-    this.site.protocol = "https";
-    this.site.domainName = "";
-    // this.myForm = this.formBuilder.group({
-    //     domainName: new FormControl(null, Validators.required)
-
-    //   });
+   
   }
 
   ngOnDestroy(): void {

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule } from '@angular/forms';
-import { ComponentPipe, SafeHtmlPipe } from './index';
+import { ComponentPipe, SafePipe, SafeHtmlPipe } from './index';
 
 
 @NgModule({
@@ -12,13 +12,13 @@ import { ComponentPipe, SafeHtmlPipe } from './index';
     ],
     declarations: [
         ComponentPipe,
-        SafeHtmlPipe,
-        
+        SafePipe,
+        SafeHtmlPipe        
     ],
     exports: [
         ComponentPipe,
-        SafeHtmlPipe,
-        
+        SafePipe,
+        SafeHtmlPipe        
     ]
 })
 export class PipeModule { }

@@ -1,9 +1,8 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SitesComponent } from './sites.component';
-import { SitesAddComponent } from './sites-add.component';
-import { SitesRoutingModule } from './sites-routing.module';
+import { PagesComponent } from './pages.component';
+import { PagesRoutingModule } from './pages-routing.module';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -19,7 +18,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 @NgModule({
     imports: [
         CommonModule,
-        SitesRoutingModule,
+        PagesRoutingModule,
         FormsModule,
         ReactiveFormsModule,
         FlexLayoutModule,
@@ -36,9 +35,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         
     ],
     declarations: [
-        SitesComponent, SitesAddComponent
+        PagesComponent
     ],
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     providers:[    ]
 })
-export class SitesModule { }
+export class PagesModule { }
