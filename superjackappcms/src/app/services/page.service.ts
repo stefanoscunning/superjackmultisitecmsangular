@@ -46,6 +46,13 @@ export class PageService {
         
     }
 
+    getTreeBySiteId(siteId: number): Observable<Page[]> {
+        return this.http.get<Page[]>(`${environment.api.url}/pages/tree/` + siteId, {
+            headers:  this.httpHeaders
+        });
+        
+    }
+
 
     getAllByQuery(siteId: number): Observable<Page[]> {
         return this.http.get<Page[]>(`${environment.api.url}/pages/query`, {

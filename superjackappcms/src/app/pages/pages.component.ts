@@ -5,13 +5,16 @@ import {FormGroup, FormControl} from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatBottomSheet, MatBottomSheetRef} from '@angular/material/bottom-sheet';
-import {Language, Page, PageSearchFilter, Transfer} from '../models';
+import {Language, Page, PageSearchFilter, Site, Transfer} from '../models';
 import { environment } from '../../environments/environment';
-import {PageService} from '../services';
+import {PageService, SiteService} from '../services';
 import * as Lookups from '../shared/lookups';
 import {ConfirmationDialogService} from '../dialogs/confirmationdialog.service';
 import { faGlobe as fasGlobe, faEllipsisV as fasEllipsisV, faPencilAlt as fasPencilAlt, 
-faSave as fasSave, faTrash as fasTrash, faClone as fasClone} from '@fortawesome/free-solid-svg-icons';
+faSave as fasSave, faTrash as fasTrash, faClone as fasClone, 
+faCheck as fasCheck, faTimes as fasTimes, faHistory as fasHistory, faProjectDiagram as fasProjectDiagram, 
+faCogs as fasCogs, faPlusCircle as fasPlusCircle, faCopy as fasCopy, faCloudUploadAlt as fasCloudUploadAlt, 
+faArrowCircleUp as fasArrowCircleUp} from '@fortawesome/free-solid-svg-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 @Component({
@@ -32,10 +35,11 @@ export class PagesComponent implements OnInit, OnDestroy {
     encryptionKey = environment.encryption.key;
     transfer: Transfer | undefined;
     languages: Language[] = Lookups.Languages;
+    site!: Site | null;
     pages: Page[] = [];
-    displayedColumns: string[] = ['select', 'navigationTitle', 'pageTypeId', 'route'];
-    columnsToDisplay = ['navigationTitle', 'pageTypeId', 'route'];
-    columnDisplayNames = ['Navigation Title', 'Template', 'R oute'];
+    displayedColumns: string[] = ['navigationTitle', 'pageTypeId', 'route', 'level', 'dateScheduledPublish'];
+    columnsToDisplay = ['navigationTitle', 'pageTypeId', 'route', 'level', 'dateScheduledPublish'];
+    columnDisplayNames = ['Navigation Title', 'Template', 'Route', 'Level', 'Publish Scheduled Date'];
     dataSource = new MatTableDataSource<Page>(this.pages);
     selection = new SelectionModel<Page>(false, []);
     expandedElement!: Page | null;
@@ -44,10 +48,15 @@ export class PagesComponent implements OnInit, OnDestroy {
     removalConfirmation: string[] = ["Delete Page?", "Are you sure you want to permanently delete this page?", "Delete", "Cancel"];
     primaryPageRemovalConfirmation: string[] = ["Delete Page?", "You cannot delete your primary page", "OK", "Cancel"];
     siteId!: number;
+    visiblePages!: Page[] | null;
+    title!: string | null;
+    parentPage!: Page | null;
+    showVersions: boolean = false;
     
 
   constructor(private router: Router, private route: ActivatedRoute, 
    private pageService: PageService,
+   private siteService: SiteService,
    private bottomsheet: MatBottomSheet,
    private confirmationDialogService: ConfirmationDialogService,
    iconLibrary: FaIconLibrary 
@@ -61,7 +70,45 @@ export class PagesComponent implements OnInit, OnDestroy {
            
         }
       }
-      iconLibrary.addIcons(fasGlobe, fasEllipsisV, fasPencilAlt, fasSave, fasTrash, fasClone);
+      iconLibrary.addIcons(fasGlobe, fasEllipsisV, fasPencilAlt, fasSave, fasTrash, 
+        fasClone, fasCheck, fasTimes, fasHistory, fasProjectDiagram, fasCogs, 
+        fasPlusCircle, fasCopy, fasCloudUploadAlt, fasArrowCircleUp);
+    }
+
+    goUpLevel(){
+      if(this.parentPage!=null ){
+        if(this.parentPage.level==0){
+          this.parentPage = null;
+          this.title = `Root pages for ${this.site?.domainName}`;
+          this.visiblePages = this.pages.filter(x=>x.level==0);
+        }
+        else{
+            const identifier = this.parentPage.parentPageIdentifier;
+            if(this.pages!=null){
+              this.parentPage = this.pages.filter(x=>x.pageIdentifier==identifier)[0];
+              this.title = `Child pages for ${this.parentPage.navigationTitle}`;
+              this.visiblePages = this.parentPage.children;
+            }
+        }
+      }
+      
+    }
+
+    showChildPages(p: Page){
+      this.parentPage = p;
+      this.title = `Child pages for ${this.parentPage.navigationTitle}`;
+      this.visiblePages = p.children;
+      
+    }
+
+    showVersionPages(p: Page){
+      this.parentPage = p;
+      this.title = `Version history for ${this.parentPage.navigationTitle}`;
+      this.visiblePages = p.versions;
+    }
+
+    addPage(){
+
     }
 
     removeElement(){
@@ -145,13 +192,10 @@ export class PagesComponent implements OnInit, OnDestroy {
     }
 
     initPages(){
-      if(this.siteId!=undefined){
-        let filter = new PageSearchFilter();
-        filter.siteId = this.siteId;
-        filter.level = 0;
-        filter.published = true;
-        this.pageService.getByQuery(filter).subscribe(data=>{
+      if(this.siteId!=undefined){        
+        this.pageService.getTreeBySiteId(this.siteId).subscribe(data=>{
           this.pages = data;
+          this.visiblePages = this.pages.filter(x=>x.level==0);
         });
       }
       
@@ -165,7 +209,12 @@ export class PagesComponent implements OnInit, OnDestroy {
         let s = this.route.snapshot.paramMap.get('siteid');
         if(s!=undefined){
           this.siteId = parseInt(s);
-          this.initPages();
+          this.siteService.getById(this.siteId).subscribe(data=>{
+            this.site = data;
+            this.title = `Root pages for ${this.site.domainName}`;
+            this.initPages();
+          });
+          
         }
       });
      

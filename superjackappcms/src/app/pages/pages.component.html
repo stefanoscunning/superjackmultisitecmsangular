@@ -1,82 +1,156 @@
 <mat-card class="m-3">
-    <mat-card-header class="sj-full-width">
-        <mat-card-title>
-            <div fxLayout="row">
-                <div fxFlex="95">
-                    <span class="me-3"><fa-icon [icon]="['fas', 'globe']"></fa-icon></span><span>Pages</span>
-                </div>
-                <div fxFlex="5">
-                    <mat-menu #appMenu="matMenu">
-                        <ng-template matMenuContent>
-                            <button (click)="addElement()" mat-menu-item>Add new</button>
-                        </ng-template>
-                    </mat-menu>
-                    <button mat-icon-button [matMenuTriggerFor]="appMenu">
-                        <fa-icon [icon]="['fas', 'ellipsis-v']"></fa-icon>
-                       
-                    </button>
-                </div>
-            </div>
-        </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <div class="sj-responsive">
-            <table mat-table [dataSource]="pages" multiTemplateDataRows class="mat-elevation-z8">
-                <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay; let idx=index">
-                    <th mat-header-cell *matHeaderCellDef> {{columnDisplayNames[idx]}} </th>
-                    <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
-                </ng-container>
-
-                <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
-                <ng-container matColumnDef="expandedDetail">
-                    <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
-                        <div class="sj-element-detail"
-                            [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-                            <div class="expandedDetailContainer">
-                                <div class="expandedDetailTitle mb-3">
-                                    <fa-icon [icon]="['fas', 'pencil-alt']"></fa-icon>
-                                    <span class="ms-3">Page Edit Panel</span>
-                                </div>
-                                <form novalidate="" (ngSubmit)="save()" #f2="ngForm">
-                                    <div fxLayout="column wrap" fxLayoutAlign="space-between" fxLayout.xs="row"
-                                        fxLayoutGap="10px">
-
-                                      
-                                    </div>
-
-                                    <div class="mt-2 mb-3">
-                                        <button class="me-3 mb-3" type="submit" mat-raised-button color="primary">
-                                            <fa-icon [icon]="['fas', 'save']"></fa-icon>
-                                            <span class="ms-3">Save</span></button>
-
-                                        <button type="button" class="me-3 mb-3" (click)="removeElement()" mat-raised-button color="warn"
-                                            aria-label="Remove">
-                                            <fa-icon [icon]="['fas', 'trash']"></fa-icon>
-                                            <span class="ms-3">Delete</span>
-                                        </button>
-
-                                        <button type="button" class="me-3 mb-3" (click)="goToPages()" mat-raised-button color="secondary"
-                                        aria-label="Pages">
-                                        <fa-icon [icon]="['fas', 'clone']"></fa-icon>
-                                        <span class="ms-3">Pages</span>
-                                    </button>
-                                    </div>
-                                </form>
-                            </div>
-
-
-                        </div>
-                    </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-                <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="sj-element-row"
-                    [class.sj-expanded-row]="expandedElement === element"
-                    (click)="expandedElement = expandedElement === element ? null : element; changeExpandedRow()">
-                </tr>
-                <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="sj-detail-row"></tr>
-            </table>
+  <mat-card-header class="sj-full-width">
+    <mat-card-title>
+      <div fxLayout="row">
+        <div fxFlex="100">
+          <span class="me-3"><fa-icon [icon]="['fas', 'globe']"></fa-icon></span
+          ><span *ngIf="site != null">{{title}}</span>
         </div>
-
-    </mat-card-content>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <button [disabled]="parentPage==null" (click)="goUpLevel()" mat-raised-button>
+        <span class="me-1">
+            <fa-icon [icon]="['fas', 'arrow-circle-up']"></fa-icon>
+          </span>
+          <span class="me-3">
+            Up Level
+          </span>
+    </button>
+    <div class="sj-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>Navigation Title</th>
+            <th>Template</th>
+            <th>Level</th>
+            <th>Date Created</th>
+            <th>Date Published</th>
+            <th>Status</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of visiblePages; let idx = index">
+            <td>{{ p.route }}</td>
+            <td>{{ p.navigationTitle }}</td>
+            <td>{{ p.pageTypeId }}</td>
+            <td>{{ p.level }}</td>
+            <td>{{ p.dateCreated | date: "dd/MM/yyyy HH:mm" }}</td>
+            <td>{{ p.dateScheduledPublish | date: "dd/MM/yyyy HH:mm" }}</td>
+            <td>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success':p.draft, 'bg-danger':!p.draft}">Draft</span>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success':p.published, 'bg-danger':!p.published}">Published</span>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success':p.disabled, 'bg-danger':!p.disabled}">Disabled</span>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success':p.binned, 'bg-danger':!p.binned}">Binned</span>
+                <br>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success':p.versions != null && p.versions.length > 0, 'bg-danger':p.versions == null || p.versions.length == 0}">Version History</span>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success':p.children != null && p.children.length > 0, 'bg-danger':p.children == null || p.children.length == 0}">Child Pages</span>
+                
+            </td>         
+            <td>
+              <mat-menu #pageMenu="matMenu">
+                <ng-template matMenuContent>
+                    <button [disabled]="p.published || p.disabled || p.binned" mat-menu-item>
+                        <span class="me-1">
+                          <fa-icon [icon]="['fas', 'cloud-upload-alt']"></fa-icon>
+                        </span>
+                        <span class="me-3">
+                            Schedule Page to be Publish
+                        </span>
+                  </button>
+                    <button [disabled]="p.draft || p.binned" mat-menu-item>
+                        <span class="me-1">
+                          <fa-icon [icon]="['fas', 'copy']"></fa-icon>
+                        </span>
+                        <span class="me-3">
+                          Create New Draft of Page
+                        </span>
+                  </button>
+                 <button [disabled]="p.binned" mat-menu-item>
+                        <span class="me-1">
+                          <fa-icon [icon]="['fas', 'pencil-alt']"></fa-icon>
+                        </span>
+                        <span class="me-3">
+                          Edit Version Page Blocks
+                        </span>
+                  </button>
+                  <button [disabled]="p.binned" mat-menu-item>
+                    <span class="me-1">
+                      <fa-icon [icon]="['fas', 'cogs']"></fa-icon>
+                    </span>
+                    <span class="me-3">
+                      Edit Version Page Properties
+                    </span>
+                    </button>
+                    <button [disabled]="p.binned" mat-menu-item>
+                        <span class="me-1">
+                          <fa-icon [icon]="['fas', 'plus-circle']"></fa-icon>
+                        </span>
+                        <span class="me-3">
+                          Add Child Page
+                        </span>
+                        </button>
+                  <button (click)="showVersionPages(p)" [disabled]="p.binned || p.versions==null || p.versions.length==0" mat-menu-item>
+                    <span class="me-1">
+                      <fa-icon [icon]="['fas', 'history']"></fa-icon>
+                    </span>
+                    <span
+                      class="me-3"
+                      matBadgeSize="small"
+                      matBadge="{{ p.versions!=null && p.versions.length>0 ? p.versions.length : '' }}"
+                      matBadgeColor="warn"
+                      matBadgeOverlap="false"
+                      matBadgePosition="after"
+                      [matBadgeHidden]="p.versions==null || p.versions.length==0"
+                    >
+                      Version History
+                    </span>
+                  </button>
+                  <button (click)="showChildPages(p)" [disabled]="p.binned || p.children==null || p.children.length==0" mat-menu-item>
+                    <span class="me-1">
+                      <fa-icon [icon]="['fas', 'project-diagram']"></fa-icon>
+                    </span>
+                    <span
+                      class="me-3"
+                      matBadgeSize="small"
+                      matBadge="{{ p.children!=null && p.children.length>0 ? p.children.length : '' }}"
+                      matBadgeColor="warn"
+                      matBadgeOverlap="false"
+                      matBadgePosition="after"
+                      [matBadgeHidden]="p.children==null || p.children.length==0"
+                    >
+                      Child Pages
+                    </span>
+                  </button>
+                    
+                  <button [disabled]="p.binned" mat-menu-item>
+                    <span class="me-1">
+                      <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+                    </span>
+                    <span class="me-3">
+                      Bin Page
+                    </span>
+              </button>
+                </ng-template>
+              </mat-menu>
+              <button mat-icon-button [matMenuTriggerFor]="pageMenu">
+                <fa-icon [icon]="['fas', 'ellipsis-v']"></fa-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button [disabled]="parentPage==null" (click)="goUpLevel()" mat-raised-button>
+        <span class="me-1">
+            <fa-icon [icon]="['fas', 'arrow-circle-up']"></fa-icon>
+          </span>
+          <span class="me-3">
+            Up Level
+          </span>
+    </button>
+  </mat-card-content>
 </mat-card>

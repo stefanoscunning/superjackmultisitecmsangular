@@ -20,5 +20,7 @@ export class Page{
     published!: boolean;
     disabled!: boolean;
     binned!: boolean;
+    versions!: Page[];
+    children!: Page[];
    
 }
