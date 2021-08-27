@@ -15,6 +15,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatBadgeModule} from '@angular/material/badge';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
     imports: [
@@ -33,6 +34,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         MatSelectModule,
         MatTableModule,
         MatBadgeModule,
+        DragDropModule,
         FontAwesomeModule
         
     ],

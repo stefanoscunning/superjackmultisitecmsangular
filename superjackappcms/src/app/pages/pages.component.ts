@@ -5,9 +5,9 @@ import {FormGroup, FormControl} from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatBottomSheet, MatBottomSheetRef} from '@angular/material/bottom-sheet';
-import {Language, Page, PageSearchFilter, Site, Transfer} from '../models';
+import {Language, Page, PageBlock, PageSearchFilter, Site, Transfer} from '../models';
 import { environment } from '../../environments/environment';
-import {PageService, SiteService} from '../services';
+import {PageService, PageBlockService, SiteService} from '../services';
 import * as Lookups from '../shared/lookups';
 import {ConfirmationDialogService} from '../dialogs/confirmationdialog.service';
 import { faGlobe as fasGlobe, faEllipsisV as fasEllipsisV, faPencilAlt as fasPencilAlt, 
@@ -51,11 +51,14 @@ export class PagesComponent implements OnInit, OnDestroy {
     visiblePages!: Page[] | null;
     title!: string | null;
     parentPage!: Page | null;
-    showVersions: boolean = false;
+    showPageBlockEditor: boolean = false;
+    selectedPage!: Page | null;
+    pageBlocks: PageBlock[] = [];
     
 
   constructor(private router: Router, private route: ActivatedRoute, 
    private pageService: PageService,
+   private pageBlockService: PageBlockService,
    private siteService: SiteService,
    private bottomsheet: MatBottomSheet,
    private confirmationDialogService: ConfirmationDialogService,
@@ -73,6 +76,11 @@ export class PagesComponent implements OnInit, OnDestroy {
       iconLibrary.addIcons(fasGlobe, fasEllipsisV, fasPencilAlt, fasSave, fasTrash, 
         fasClone, fasCheck, fasTimes, fasHistory, fasProjectDiagram, fasCogs, 
         fasPlusCircle, fasCopy, fasCloudUploadAlt, fasArrowCircleUp);
+    }
+
+    loadPageBlockEditor(p: Page): void{
+      this.selectedPage = p;
+      this.showPageBlockEditor = true;
     }
 
     goUpLevel(){
@@ -189,6 +197,15 @@ export class PagesComponent implements OnInit, OnDestroy {
 
     goTo(path: string){
       this.router.navigate([path]);
+    }
+
+    initPageBlocks(){
+      if(this.selectedPage!=null){
+        this.pageBlockService.getAllByPageId(this.selectedPage.id).subscribe(data=>{
+          this.pageBlocks = data;
+          console.log(this.pageBlocks);
+        });
+      }
     }
 
     initPages(){

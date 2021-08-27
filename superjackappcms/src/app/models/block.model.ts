@@ -1,3 +1,4 @@
+import { BlockField } from "./blockfield.model";
 
 export class Block{
     id!: number;
@@ -8,4 +9,5 @@ export class Block{
     parentId!: number;
     blockType!:string;
     canHaveChildren!: boolean;
+    BlockFields?: BlockField[];
 }

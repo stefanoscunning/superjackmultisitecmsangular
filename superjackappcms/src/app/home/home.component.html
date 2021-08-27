@@ -12,3 +12,10 @@
                 </mat-card>
     </div>
 </div>
+
+
+<ng-container *ngIf="dynamicComponents && dynamicComponents.length>0">
+    <div class="m-2">
+        <componentloader [components]="dynamicComponents"></componentloader>
+    </div>        
+</ng-container>

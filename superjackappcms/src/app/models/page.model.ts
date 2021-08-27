@@ -1,6 +1,7 @@
 
 export class Page{
     id!: number;
+    uuid!: string;
     pageIdentifier!: string;
     dateCreated!: Date;
     dateModified!: Date;

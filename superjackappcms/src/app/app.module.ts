@@ -18,6 +18,7 @@ import {DialogsModule} from './dialogs/dialogs.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 // import { SignaturePadModule } from 'angular2-signaturepad';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {ComponentsModule} from './components/components.module';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     SharedModule,
     MaterialModule,
    DialogsModule,
-   FontAwesomeModule
+   FontAwesomeModule,
+   ComponentsModule
     // SignaturePadModule
   ],
   providers: [AuthService, UserService],
