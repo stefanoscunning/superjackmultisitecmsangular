@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  version: '0.0.0',
-    versionDate: '2020-12-11 12:07:13',
+  version: '0.1.0',
+    versionDate: '2021-09-27 22:59:49',
   type: 'local',
   app: {
     url: "http://localhost:4200",
