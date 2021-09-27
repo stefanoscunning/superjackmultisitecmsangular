@@ -16,6 +16,7 @@ import {MatBadgeModule} from '@angular/material/badge';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {PageBlocksComponent} from './pageblocks/pageblocks.component';
 
 @NgModule({
     imports: [
@@ -39,7 +40,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
         
     ],
     declarations: [
-        PagesComponent
+        PagesComponent,
+        PageBlocksComponent
     ],
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     providers:[    ]

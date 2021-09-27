@@ -5,19 +5,34 @@ import { Routes, RouterModule } from '@angular/router';
 export const ROUTES: Routes = [
   {
     path: 'home',
-    loadChildren: () => import('../../home/home.module').then(mod => mod.HomeModule)
+    loadChildren: () =>
+      import('../../home/home.module').then((mod) => mod.HomeModule),
   },
   {
     path: 'sites',
-    loadChildren: () => import('../../sites/sites.module').then(mod => mod.SitesModule)
+    loadChildren: () =>
+      import('../../sites/sites.module').then((mod) => mod.SitesModule),
   },
   {
     path: 'blocks',
-    loadChildren: () => import('../../blocks/blocks.module').then(mod => mod.BlocksModule)
+    loadChildren: () =>
+      import('../../blocks/blocks.module').then((mod) => mod.BlocksModule),
   },
   {
     path: 'pages/:siteid',
-    loadChildren: () => import('../../pages/pages.module').then(mod => mod.PagesModule)
-  }
-
+    loadChildren: () =>
+      import('../../pages/pages.module').then((mod) => mod.PagesModule),
+  },
+  {
+    path: 'templates',
+    loadChildren: () =>
+      import('../../templates/templates.module').then(
+        (mod) => mod.TemplatesModule
+      ),
+  },
+  {
+    path: 'users',
+    loadChildren: () =>
+      import('../../users/users.module').then((mod) => mod.UsersModule),
+  },
 ];

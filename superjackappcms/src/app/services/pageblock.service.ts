@@ -46,6 +46,13 @@ export class PageBlockService {
         
     }
 
+    getAllByPageIdParentIdLevel(pageid: number, parentid: number, level: number): Observable<PageBlock[]> {
+        return this.http.get<PageBlock[]>(`${environment.api.url}/pageblocks/pageid/` + pageid + `/` + parentid + `/` + level, {
+            headers:  this.httpHeaders
+        });
+        
+    }
+
     getById(id: number): Observable<PageBlock> {
         return this.http.get<PageBlock>(`${environment.api.url}/pageblocks/` + id, {
             headers:  this.httpHeaders

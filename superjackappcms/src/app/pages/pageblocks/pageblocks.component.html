@@ -1,0 +1,138 @@
+<mat-card *ngIf="selectedPage!=null" class="m-3">
+    <mat-card-header class="sj-full-width">
+      <mat-card-title>
+        <div fxLayout="row">
+          <div fxFlex="100">
+            <span class="me-3"><fa-icon [icon]="['fas', 'globe']"></fa-icon></span>
+            <span *ngIf="selectedPage != null">{{title}}</span>
+          </div>
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <button (click)="goUpLevel()" mat-raised-button>
+          <span class="me-1">
+              <fa-icon [icon]="['fas', 'arrow-circle-up']"></fa-icon>
+            </span>
+            <span class="me-3">
+              Up Level
+            </span>
+      </button>
+      <button (click)="addBlock()" mat-raised-button>
+        <span class="me-1">
+            <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+          </span>
+          <span class="me-3">
+            Add Block
+          </span>
+    </button>
+      <div class="sj-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Sub-Blocks?</th>
+              <th>Settings?</th>
+              <th>Options</th>
+            </tr>
+          </thead>
+          <tbody cdkDropList (cdkDropListDropped)="dropPageBlock($event)">
+            <tr cdkDrag *ngFor="let p of pageblocks; let idx = index">
+              <td>{{ p.block.title }}</td>
+              <td>
+                <div class="btn-group" role="group" aria-label="Sub-BLocks">
+                  <button title="Sub-Blocks" type="button" class="btn" (click)="showChildBlocks(p)" [disabled]="p.children==null || p.children.length==0">
+                    <span class="text-center">
+                      <fa-icon [icon]="['fas', 'cubes']"></fa-icon>
+                  </span>
+                    <span
+                      class="me-3"
+                      matBadgeSize="small"
+                      matBadge="{{ p.children!=null && p.children.length>0 ? p.children.length : '' }}"
+                      matBadgeColor="warn"
+                      matBadgeOverlap="false"
+                      matBadgePosition="after"
+                      [matBadgeHidden]="p.children==null || p.children.length==0">                  
+                    </span>
+                  </button>
+                  <button title="Add Sub-Block" type="button" class="btn">
+                    <span class="text-center">
+                      <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+                  </span>
+                  </button>
+                 
+                </div>
+               
+              </td>
+              <td>
+                <div class="btn-group" role="group" aria-label="Settings">
+                  <button title="Settings" type="button" class="btn" (click)="showBlockFields(p)" [disabled]="p.fields==null || p.fields.length==0">
+                    <span class="text-center">
+                      <fa-icon [icon]="['fas', 'cogs']"></fa-icon>
+                  </span>
+                    <span
+                      class="me-3"
+                      matBadgeSize="small"
+                      matBadge="{{ p.fields!=null && p.fields.length>0 ? p.fields.length : '' }}"
+                      matBadgeColor="warn"
+                      matBadgeOverlap="false"
+                      matBadgePosition="after"
+                      [matBadgeHidden]="p.fields==null || p.fields.length==0">                  
+                    </span>
+                  </button>
+                  <button title="Add Field" type="button" class="btn">
+                    <span class="text-center">
+                      <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+                  </span>
+                  </button>
+                 
+                </div>
+               
+              </td>
+              <td>
+                <mat-menu #pageBlockMenu="matMenu">
+                  <ng-template matMenuContent>
+                    <button (click)="showChildBlocks(p)" [disabled]="p.children==null || p.children.length==0" mat-menu-item>
+                      <span class="me-1">
+                        <fa-icon [icon]="['fas', 'cubes']"></fa-icon>
+                      </span>
+                      <span
+                        class="me-3"
+                        matBadgeSize="small"
+                        matBadge="{{ p.children!=null && p.children.length>0 ? p.children.length : '' }}"
+                        matBadgeColor="warn"
+                        matBadgeOverlap="false"
+                        matBadgePosition="after"
+                        [matBadgeHidden]="p.children==null || p.children.length==0"
+                      >
+                        Child Blocks
+                      </span>
+                    </button>
+                  </ng-template>
+                </mat-menu>
+                <button mat-icon-button [matMenuTriggerFor]="pageBlockMenu">
+                  <fa-icon [icon]="['fas', 'ellipsis-v']"></fa-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button (click)="goUpLevel()" mat-raised-button>
+          <span class="me-1">
+              <fa-icon [icon]="['fas', 'arrow-circle-up']"></fa-icon>
+            </span>
+            <span class="me-3">
+              Up Level
+            </span>
+      </button>
+      <button (click)="addBlock()" mat-raised-button>
+        <span class="me-1">
+            <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+          </span>
+          <span class="me-3">
+            Add Block
+          </span>
+    </button>
+    </mat-card-content>
+  </mat-card>
